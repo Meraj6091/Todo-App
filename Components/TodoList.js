@@ -1,6 +1,6 @@
 import React from "react"
 import {StyleSheet,Text,View,TouchableOpacity, Modal} from 'react-native'
-import colors from "../Colors";
+import {colors} from "../Colors";
 import TodoModal from "./TodoModal";
 
 export default class TodoList extends React.Component{
@@ -21,10 +21,9 @@ export default class TodoList extends React.Component{
         return(
          <View>
             <Modal animationType='slide' visible={this.state.showListVisible} onRequestClose={() => this.toggleListModal()}>
-               <TodoModal list={list} closeModal={() => this.toggleListModal()}/>
-
-               
+               <TodoModal list={list} closeModal={() => this.toggleListModal()} updateList={this.props.updateList}/>
             </Modal>
+
                 <TouchableOpacity style ={[styles.listContainer,{backgroundColor:list.color}]} onPress={() => this.toggleListModal()}>
                 <Text style={styles.listTitle} numberOfLines={1}>{list.name}</Text>
             <View>

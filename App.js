@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View,Button,TouchableOpacity, FlatList, Modal } from 'react-native';
-import colors from "./Colors";
+import {colors} from "./Colors";
 import {AntDesign} from "react-native-vector-icons";
 import tempData from "./tempData";
 import TodoList from "./Components/TodoList"
@@ -9,7 +9,8 @@ import AddListModal from "./Components/AddListModal"
 
 export default class App extends React.Component{
   state={
-    addTodoVisible:false
+    addTodoVisible:false,
+    lists:tempData
   };
   toggleAddTodoModal(){
       this.setState({addTodoVisible: !this.state.addTodoVisible});
@@ -17,8 +18,20 @@ export default class App extends React.Component{
   }
 
   renderList = list => {
-    return <TodoList list={list}/>
-  }
+    return <TodoList list={list} updateList={this.updateList}/>
+  };
+
+  addList=list =>{
+    this.setState({lists:[...this.state.lists,{...list, id:this.state.lists.length = 1, todos:[] }] });
+  };
+
+  updateList = list => {
+    this.setState({
+      lists:this.state.lists.map(item => {
+        return item.id === list.id ? list:item;
+      })
+    })
+  };
 
   render(){
     return (
@@ -26,14 +39,14 @@ export default class App extends React.Component{
         <Modal animationType="slide" visible={this.state.addTodoVisible}
         onRequestClose={() => this.toggleAddTodoModal()}
         >
-       <AddListModal closeModal={() => this.toggleAddTodoModal()}/>
+       <AddListModal closeModal={() => this.toggleAddTodoModal()} addList={this.addList}/>
 
             
         </Modal>
         <View style={{flexDirection:"row"}}>
             <View style={styles.divider}/>
             <Text style={styles.title}>
-            Todo <Text style={{fontWeight:'300',color:colors.blue}}>Lists</Text>
+            Todo <Text style={{fontWeight:'300',color:colors.blue}}>App</Text>
            </Text>
            <View style={styles.divider}/>
         
@@ -46,11 +59,12 @@ export default class App extends React.Component{
             <Text style={styles.add}>Add List</Text>
         </View>
         <View style={{height:275,paddingLeft:32}}>
-          <FlatList data={tempData} 
+          <FlatList data={this.state.lists} 
           keyExtractor={item=>item.name}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({item})=> this.renderList(item)}
+         keyboardShouldPersistTaps="always"
           />
          </View>
       </View>
