@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     borderColor:colors.lightBlue,
     borderRadius:4,
     padding:16,
-    alignItems:"center",
-    justifyContent:"center"
+    // alignItems:"center",
+    // justifyContent:"center"
   },
   add:{
     color:colors.blue,
