@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View,Button,TouchableOpacity, FlatList, Modal, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View,Button,TouchableOpacity, FlatList, Modal, ActivityIndicator, LogBox } from 'react-native';
 import {colors} from "./Colors";
 import {AntDesign} from "react-native-vector-icons";
 import tempData from "./tempData";
@@ -70,9 +70,11 @@ export default class App extends React.Component{
        <AddListModal closeModal={() => this.toggleAddTodoModal()} addList={this.addList}/>
             
         </Modal>
-        <View>
+
+        {/* <View>
           <Text>User:{this.state.user.uid}</Text>
-        </View>
+        </View> */}
+
         <View style={{flexDirection:"row"}}>
             <View style={styles.divider}/>
             <Text style={styles.title}>

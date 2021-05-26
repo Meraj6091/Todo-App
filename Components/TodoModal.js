@@ -1,7 +1,8 @@
 import React from 'react'
-import { Text, StyleSheet, View ,SafeAreaView,TouchableOpacity,FlatList, KeyboardAvoidingView, TextInput, Keyboard} from 'react-native'
+import { Text, StyleSheet, View ,SafeAreaView,TouchableOpacity,FlatList, KeyboardAvoidingView, TextInput, Keyboard,Animated} from 'react-native'
 import {AntDesign ,Ionicons} from "@expo/vector-icons";
 import {colors} from '../Colors';
+import {Swipeable} from 'react-native-gesture-handler'
 export default class TodoModal extends React.Component {
    state={
       newTodo:""
@@ -16,13 +17,24 @@ export default class TodoModal extends React.Component {
 
    addTodo = () => {
        let list = this.props.list
-       list.todos.push({title : this.state.newTodo, completed: false})
-        this.props.updateList(list);
+       if(!list.todos.some(todo => todo.title === this.state.newTodo)){
+           list.todos.push({title: this.state.newTodo, completed:false});
+           this.props.updateList(list);
+        }
+     
+       
         this.setState({newTodo:""});
         Keyboard.dismiss();
     };
+    deleteTodo = index => {
+        let list = this.props.list;
+        list.todos.splice(index,1);
+        this.props.updateList(list);
+    }
+
    renderTodo =(todo,index) => {
        return(
+          <Swipeable renderRightActions={(_, dragX) =>this.rightActions(dragX,index)}>
            <View style={styles.todoContainer}>
               <TouchableOpacity onPress={() => this.toggleTodoCompleted(index)}>
                   <Ionicons
@@ -45,8 +57,31 @@ export default class TodoModal extends React.Component {
               {todo.title}
               </Text>
            </View>
+         </Swipeable>
        );
    };
+  rightActions = (dragX,index) => {
+    const scale = dragX.interpolate({
+        inputRange: [-100, 0],
+        outputRange:[1,0.9],
+        extrapolate:'clamp'
+    });
+
+    const opacity = dragX.interpolate({
+        inputRange:[-100,-20,0],
+        outputRange:[1,0.9,0],
+        extrapolate:'clamp'
+    })
+    return(
+        <TouchableOpacity onPress={() => this.deleteTodo(index)}>
+            <Animated.View style ={[styles.deleteButton, {opacity:opacity}]}>
+                <Animated.Text style ={{color:colors.white, fontWeight:'600', transform:[{scale}]}}>
+                    Remove
+                </Animated.Text>
+            </Animated.View>
+        </TouchableOpacity>
+    );
+  };
     render() {
         const list =this.props.list
         const taskCount =list.todos.length;
@@ -69,12 +104,11 @@ export default class TodoModal extends React.Component {
                         </Text>
                     </View>
                 </View>
-                <View style={[styles.section, {flex:3}]}>
+                <View style={[styles.section, {flex:3,marginVertical:16}]}>
                     <FlatList 
                     data={list.todos} 
                     renderItem={({item,index}) => this.renderTodo(item,index)}
-                     keyExtractor={ (_,index)=> index.toString()}
-                     contentContainerStyle={{paddingHorizontal:32, paddingVertical:64}}
+                     keyExtractor={item => item.title}
                      showsVerticalScrollIndicator={false}
 
                      />
@@ -100,13 +134,13 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     section:{
-        flex:1,
         alignSelf:'stretch'
     },
     header:{
         justifyContent:'flex-end',
         marginLeft:64,
-        borderBottomWidth:3
+        borderBottomWidth:3,
+        paddingTop:16
     },
     title:{
         fontSize:30,
@@ -122,7 +156,8 @@ const styles = StyleSheet.create({
     footer:{
         paddingHorizontal:32,
         alignItems:"center",
-        flexDirection:'row'
+        flexDirection:'row',
+        paddingVertical: 16
     },
     input:{
 
@@ -142,12 +177,20 @@ const styles = StyleSheet.create({
     todoContainer:{
         paddingVertical:16,
         flexDirection:'row',
-        alignItems:'center'
+        alignItems:'center',
+        paddingLeft:32
     },
     todo:{
         color:colors.black,
         fontWeight:'700',
         fontSize:16
 
+    },
+    deleteButton:{
+        flex:1,
+        backgroundColor:colors.red,
+        justifyContent:'center',
+        alignItems:'center',
+        width:80
     }
 });

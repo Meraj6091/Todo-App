@@ -1,4 +1,4 @@
-import firebase from "firebase"
+import * as firebase from "firebase"
 import "@firebase/firestore"
 const firebaseConfig={ //constant variable (same as java final keyword)
     apiKey: "AIzaSyAuCWY0Ycz114jrEXuNtfh4tLsiBHbAtrg",
@@ -8,7 +8,9 @@ const firebaseConfig={ //constant variable (same as java final keyword)
     messagingSenderId: "633455803231",
     appId: "1:633455803231:web:79af8c3d2fb267544754ea",
     measurementId: "G-8LCB6Y1LWM"
+    
 }
+
 class Fire{
     constructor (callback){
         this.init(callback);
@@ -36,6 +38,7 @@ class Fire{
     getLists(callback){
         let ref = this.ref.orderBy('name');
         this.unsubscribe= ref.onSnapshot(snapshot => {
+            var lists;
             lists = [];
 
             snapshot.forEach(doc => {
@@ -67,4 +70,5 @@ class Fire{
        
     }
 }
+
 export default Fire
